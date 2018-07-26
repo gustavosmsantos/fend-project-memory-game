@@ -1,14 +1,14 @@
 /*
  * Create a list that holds all of your cards
  */
-var icons = ["fa-diamond", "fa-paper-plane-o", "fa-anchor", "fa-bolt", "fa-cube", "fa-leaf", "fa-bicycle", "fa-bomb"];
+var icons = ['fa-diamond', 'fa-paper-plane-o', 'fa-anchor', 'fa-bolt', 'fa-cube', 'fa-leaf', 'fa-bicycle', 'fa-bomb'];
 
-const CARD_STATE = { "UNTAPPED": "card", "TAPPED": "card open show", "MATCHED": "card match show" }
+const CARD_STATE = { 'TAPPED': 'card', 'UNTAPPED': 'card open show', 'MATCHED': 'card match show' }
 
 const generateShuffledCards = () => {
     var cards = [];
     icons.forEach((icon, index) => {
-        var card = { id: index, icon: "fa " + icon, state: "UNTAPPED" };
+        var card = { id: index, icon: 'fa ' + icon, state: 'TAPPED' };
         cards = cards.concat(card, Object.assign({}, card));
     });
 
@@ -32,48 +32,51 @@ const changeCardsState = (newState, ...cards) => {
     cards.forEach((card) => { card.state = newState });
 }
 
+const untapCards = (...cards) => {
+    changeCardsState('UNTAPPED', ...cards);
+}
+
 const tapCards = (...cards) => {
-    this.changeCardsState('TAPPED', cards);
+    changeCardsState('TAPPED', ...cards);
+}
+
+const tapCardsScheduled = (seconds, ...cards) => {
+    setTimeout(() => { debugger; tapCards(...cards) }, seconds * 1000);
 }
 
 const matchCards = (...cards) => {
-    this.changeCardsState('MATCHED', cards);
+    changeCardsState('MATCHED', ...cards);
 }
 
 var app = new Vue({
     el: '.container',
     data: {
       cards: generateShuffledCards(),
-      lastCards: []
+      lastCard: undefined
     },
     methods: {
-        tapCard: (card) => {
+        switchCard: (card) => {
 
-            if (this.lastCards.size == 2) {
-                tapCards(this.lastCards);
-                this.lastCards = [];
-            }
-
-            var tappedCard = this.lastCards[0];
+            var untappedCard = this.lastCard;
             console.log('Actual pressed card: ', card);
-            if (tappedCard !== undefined) {
-                console.log('Previous pressed card: ' + tappedCard);
+            if (untappedCard !== undefined) {
+                console.log('Previous pressed card: ', untappedCard);
 
-                if (isSameCard(card, tappedCard)) {
-                    return;
+                debugger;
+                if (!isSameCard(card, untappedCard)) {
+                    if (isComplementaryCard(card, untappedCard)) {
+                        matchCards(card, untappedCard);
+                    } else {
+                        untapCards(card);
+                        tapCardsScheduled(1, card, untappedCard);
+                    }
+                    this.lastCard = undefined;
                 }
 
-                if (isComplementaryCard(card, tappedCard)) {
-                    matchCards(card, tappedCard);
-                } else {
-                    tapCards(card);
-                }
-
-                this.lastCards.push(card);
-
-            } else if (card.state === 'UNTAPPED') {
-                tapCards(card);
-                this.tappedCard = card;
+            } else if (card.state === 'TAPPED') {
+                debugger;
+                untapCards(card);
+                lastCard = card;
             }
         },
         cardClass: (card) => {
@@ -84,7 +87,7 @@ var app = new Vue({
 
 /*
  * Display the cards on the page
- *   - shuffle the list of cards using the provided "shuffle" method below
+ *   - shuffle the list of cards using the provided 'shuffle' method below
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
@@ -108,7 +111,7 @@ function shuffle(array) {
 /*
  * set up the event listener for a card. If a card is clicked:
  *  - display the card's symbol (put this functionality in another function that you call from this one)
- *  - add the card to a *list* of "open" cards (put this functionality in another function that you call from this one)
+ *  - add the card to a *list* of 'open' cards (put this functionality in another function that you call from this one)
  *  - if the list already has another card, check to see if the two cards match
  *    + if the cards do match, lock the cards in the open position (put this functionality in another function that you call from this one)
  *    + if the cards do not match, remove the cards from the list and hide the card's symbol (put this functionality in another function that you call from this one)

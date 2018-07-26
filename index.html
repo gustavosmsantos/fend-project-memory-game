@@ -30,7 +30,7 @@
         </section>
 
         <ul class="deck">
-            <li v-for="card in cards" :class="cardClass(card)" v-on:click="tapCard(card)" >
+            <li v-for="card in cards" :class="cardClass(card)" v-on:click="switchCard(card)" >
                 <i :class = "card.icon"></i>
             </li>
         </ul>
