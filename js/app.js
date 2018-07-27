@@ -9,7 +9,8 @@ const initialState = () => {
     var data = {
         cards: generateShuffledCards(),
         lastCard: undefined,
-        matchedAmount: 0
+        matchedAmount: 0,
+        moves: 0
     };
     
     //tap all cards, initializing the game
@@ -37,7 +38,7 @@ var app = new Vue({
                     }
                     this.lastCard = undefined;
                 }
-
+                this.moves++;
             } else if (card.state === 'TAPPED') {
                 untapCards(card);
                 this.lastCard = card;
@@ -51,6 +52,17 @@ var app = new Vue({
         },
         restartGame: function() {
             Object.assign(this.$data, initialState());
+        },
+        getStars: function() {
+            if (this.moves <= 8) {
+                return [1, 1, 1];
+            } else if (this.moves <= 11) {
+                return [1, 1, 0];
+            } else if (this.moves <= 14) {
+                return [1, 0, 0];
+            } else {
+                return [0, 0, 0];
+            }
         }
     }
 });

@@ -31,14 +31,14 @@
 
         <section class="score-panel">
         	<ul class="stars">
-        		<li><i class="fa fa-star"></i></li>
-        		<li><i class="fa fa-star"></i></li>
-        		<li><i class="fa fa-star"></i></li>
+                <li v-for="star in getStars()">
+                    <i v-if="star == 1" class="fa fa-star"></i><i v-else class="fa fa-star-o"></i>
+                </li>
         	</ul>
 
-        	<span class="moves">3</span> Moves
+        	<span class="moves">{{ moves }}</span> Move<span v-if="moves != 1">s</span>
 
-            <div class="restart">
+            <div class="restart" v-on:click="restartGame()">
         		<i class="fa fa-repeat"></i>
         	</div>
         </section>
