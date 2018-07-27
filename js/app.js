@@ -8,7 +8,7 @@ const CARD_STATE = { 'TAPPED': 'card', 'UNTAPPED': 'card open show', 'MATCHED': 
 const generateShuffledCards = () => {
     var cards = [];
     icons.forEach((icon, index) => {
-        var card = { id: index, icon: 'fa ' + icon, state: 'TAPPED' };
+        var card = { id: index, icon: 'fa ' + icon, state: 'UNTAPPED' };
         cards = cards.concat(card, Object.assign({}, card));
     });
 
@@ -41,7 +41,7 @@ const tapCards = (...cards) => {
 }
 
 const tapCardsScheduled = (seconds, ...cards) => {
-    setTimeout(() => { debugger; tapCards(...cards) }, seconds * 1000);
+    setTimeout(() => { tapCards(...cards) }, seconds * 1000);
 }
 
 const matchCards = (...cards) => {
@@ -84,6 +84,8 @@ var app = new Vue({
         }
     }
 })
+
+tapCardsScheduled(5, ...app.cards);
 
 /*
  * Display the cards on the page
