@@ -34,9 +34,9 @@ var app = new Vue({
                 var untappedCard = this.lastCard;
                 console.log('Actual pressed card: ', card);
                 if (untappedCard !== undefined) {
-                    this.isSwitching = true;
                     console.log('Previous pressed card: ', untappedCard);
                     if (!isSameCard(card, untappedCard)) {
+                        this.isSwitching = true;
                         if (isComplementaryCard(card, untappedCard)) {
                             matchCards(card, untappedCard);
                             this.isSwitching = false;
@@ -53,8 +53,6 @@ var app = new Vue({
                         if (this.endedMatch()) {
                             this.endTime = Date.now();
                         }
-                    } else {
-                        this.isSwitching = false;
                     }
                     this.moves++;
                 } else if (card.state === 'TAPPED') {
