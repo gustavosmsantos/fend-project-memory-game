@@ -12,7 +12,8 @@ const initialState = () => {
         matchedAmount: 0,
         moves: 0,
         startTime: undefined,
-        endTime: undefined
+        endTime: undefined,
+        isSwitching: false
     };
     
     //tap all cards, initializing the game
@@ -29,28 +30,37 @@ var app = new Vue({
                 this.startTime = Date.now();
             }
 
-            var untappedCard = this.lastCard;
-            console.log('Actual pressed card: ', card);
-            if (untappedCard !== undefined) {
-                console.log('Previous pressed card: ', untappedCard);
-                if (!isSameCard(card, untappedCard)) {
-                    if (isComplementaryCard(card, untappedCard)) {
-                        matchCards(card, untappedCard);
-                        this.matchedAmount++;
-                    } else {
-                        untapCards(card);
-                        tapCardsScheduled(1, card, untappedCard);
-                    }
-                    this.lastCard = undefined;
+            if (!this.isSwitching) {
+                var untappedCard = this.lastCard;
+                console.log('Actual pressed card: ', card);
+                if (untappedCard !== undefined) {
+                    this.isSwitching = true;
+                    console.log('Previous pressed card: ', untappedCard);
+                    if (!isSameCard(card, untappedCard)) {
+                        if (isComplementaryCard(card, untappedCard)) {
+                            matchCards(card, untappedCard);
+                            this.isSwitching = false;
+                            this.matchedAmount++;
+                        } else {
+                            untapCards(card);
+                            setTimeout(() => { 
+                                tapCards(card, untappedCard);
+                                this.isSwitching = false;
+                            }, 1000);
+                        }
+                        this.lastCard = undefined;
 
-                    if (this.endedMatch()) {
-                        this.endTime = Date.now();
+                        if (this.endedMatch()) {
+                            this.endTime = Date.now();
+                        }
+                    } else {
+                        this.isSwitching = false;
                     }
+                    this.moves++;
+                } else if (card.state === 'TAPPED') {
+                    untapCards(card);
+                    this.lastCard = card;
                 }
-                this.moves++;
-            } else if (card.state === 'TAPPED') {
-                untapCards(card);
-                this.lastCard = card;
             }
         },
         cardClass: function(card) {
