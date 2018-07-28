@@ -1,7 +1,12 @@
 // ---- Private functions ---- //
-const changeCardsState = (newState, ...cards) => {
+function changeCardsState(newState, afterChangeAction, ...cards) {
     cards.forEach((card) => { card.state = newState });
+    debugger;
+    afterChangeAction();
 }
+
+const doNothing = () => {};
+function endSwitching() { this.isSwitching = false };
 
 // ---- Public functions ---- //
 
@@ -15,19 +20,33 @@ const isComplementaryCard = (c1, c2) => {
 }
 
 //Cards state change
-const untapCards = (...cards) => {
-    changeCardsState('UNTAPPED', ...cards);
+function untapCards(...cards) {
+    changeCardsState('UNTAPPED', doNothing, ...cards);
 }
 
-const tapCards = (...cards) => {
-    changeCardsState('TAPPED', ...cards);
+function tapCards(afterChangeAction = doNothing, ...cards) {
+    changeCardsState('TAPPED', afterChangeAction, ...cards);
 }
 
-const matchCards = (...cards) => {
-    changeCardsState('MATCHED', ...cards);
+function matchCards(...cards) {
+    changeCardsState('MATCHED', endSwitching.bind(this), ...cards);
+    this.matchedAmount++;
 }
 
 //Scheduled
-const tapCardsScheduled = (seconds, ...cards) => {
-    setTimeout(() => { tapCards(...cards) }, seconds * 1000);
+function tapCardsScheduled(seconds, ...cards) {
+    setTimeout(() => { tapCards(endSwitching.bind(this), ...cards) }, seconds * 1000);
+}
+
+const validStateForUntapping = (card) => {
+    return card.state === 'TAPPED';
+}
+
+function verifyCardsMatching (card, untappedCard) {
+    if (isComplementaryCard(card, untappedCard)) {
+        matchCards.bind(this)(card, untappedCard);
+    } else {
+        untapCards.bind(this)(card);
+        tapCardsScheduled.bind(this)(1, card, untappedCard);
+    }
 }
