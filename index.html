@@ -21,9 +21,9 @@
             <div class="resultBox">
                 <p>Congrats!!</p>
                 <iframe src="https://giphy.com/embed/g9582DNuQppxC" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-                <p>Your score: X stars</p>
-                <p>Your moves: X moves</p>
-                <p>Completition time: X seconds</p>
+                <p>Your score: {{ getStars() | countStars }} stars</p>
+                <p>Your moves: {{ moves }}</span> Move<span v-if="moves != 1">s</span></p>
+                <p>Completition time: {{ matchTime() }} seconds</p>
 
                 <button v-on:click="restartGame()">Play again <i class="fa fa-repeat"></i></button>
             </div>

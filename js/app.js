@@ -10,11 +10,13 @@ const initialState = () => {
         cards: generateShuffledCards(),
         lastCard: undefined,
         matchedAmount: 0,
-        moves: 0
+        moves: 0,
+        startTime: undefined,
+        endTime: undefined
     };
     
     //tap all cards, initializing the game
-    tapCardsScheduled(3, ...data.cards);
+    tapCardsScheduled(7, ...data.cards);
     return data;
 }
 
@@ -23,6 +25,9 @@ var app = new Vue({
     data: initialState(),
     methods: {
         switchCard: function (card) {
+            if (this.startTime === undefined) {
+                this.startTime = Date.now();
+            }
 
             var untappedCard = this.lastCard;
             console.log('Actual pressed card: ', card);
@@ -37,6 +42,10 @@ var app = new Vue({
                         tapCardsScheduled(1, card, untappedCard);
                     }
                     this.lastCard = undefined;
+
+                    if (this.endedMatch()) {
+                        this.endTime = Date.now();
+                    }
                 }
                 this.moves++;
             } else if (card.state === 'TAPPED') {
@@ -49,6 +58,12 @@ var app = new Vue({
         },
         endedMatch: function() {
             return this.matchedAmount == icons.length;
+        },
+        matchTime: function() {
+            if (this.endTime != undefined) {
+                return Math.abs((this.endTime - this.startTime) / 1000);
+            }
+            return undefined;
         },
         restartGame: function() {
             Object.assign(this.$data, initialState());
@@ -63,6 +78,11 @@ var app = new Vue({
             } else {
                 return [0, 0, 0];
             }
+        }
+    },
+    filters: {
+        countStars: function(stars) {
+            return stars.filter((star) => star == 1).length;
         }
     }
 });
